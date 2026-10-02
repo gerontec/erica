@@ -9,7 +9,8 @@ ERiC is optional. Download it from the ELSTER developer area
 unpack and point ERIC_HOME at the directory containing lib/libericapi.so.
 
 Env:
-  ERIC_HOME         ERiC root dir (contains lib/ with plugins2/)
+  ERIC_HOME         ERiC root dir, e.g. ERiC-44.3.6.0/Linux-x86_64 (lib/ with plugins/)
+  ERIC_HERSTELLER_ID  own manufacturer id (test id 74931 only allows the schema check)
   ERIC_WINE_DIR     alternative: dir with ericapi.dll + plugins/, run through Wine
                     (validation only), Windows Python in ERIC_WINE_DIR/python
   ERIC_LOG_DIR      where eric.log goes (default ~/.cache/eric)
@@ -17,7 +18,7 @@ Env:
   ERIC_PIN          certificate PIN (only for /eric/send)
   ERIC_ALLOW_SEND   must be "1" to enable /eric/send (real transmission!)
   ERIC_CRYPT_VER    version field of eric_verschluesselungs_parameter_t
-                    (default 3, check ericdef.h of your ERiC release)
+                    (default 3 = ERiC 44, see eric_types.h)
   EST_DATA_DIR      tax return data for /prefill (default ~/steuer, estYYYY.json)
 """
 import os

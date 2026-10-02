@@ -18,7 +18,7 @@ XML envelope layout was taken over from `erica/worker/elster_xml`.
 
 ```
 pip install fastapi uvicorn
-ERIC_HOME=/path/to/ERiC uvicorn elster_api:app --port 8095   # Linux ERiC
+ERIC_HOME=/path/to/ERiC-44.3.6.0/Linux-x86_64 uvicorn elster_api:app --port 8095   # Linux ERiC
 ERIC_WINE_DIR=/path/to/eric-win uvicorn elster_api:app        # ericapi.dll via Wine, check only
 ```
 
@@ -30,9 +30,14 @@ and never belongs in this repository.
 
 ## Notes
 
-- ERiC is not open source; get it from the ELSTER developer area with your own
-  manufacturer id. The public test id 74931 is blocked in ERiC 43, so without an
-  own id only the schema check (`EricCheckXML`) works, not the plausibility check.
+- ERiC is not open source and its licence does not allow passing it on by
+  itself: get it from the ELSTER developer area (`ERiC-<ver>-Linux-x86_64.jar`,
+  unzip it) with your own manufacturer id. ERiC binaries, headers, plugins,
+  documentation, test certificates and `ericfelder.db3` are kept out of git
+  (`.gitignore`). Bindings follow the ERiC 44.3 headers.
+- The public test id 74931 is blocked since ERiC 43, so without an own id
+  (`ERIC_HERSTELLER_ID`) only the schema check (`EricCheckXML`) works; with it,
+  `est_xml.py --validate` also runs the plausibility check (`EricBearbeiteVorgang`).
 - `/eric/send` is disabled unless `ERIC_ALLOW_SEND=1`; never through Wine.
-- Struct layout of `eric_verschluesselungs_parameter_t` must be checked against
-  `ericdef.h` of the ERiC release in use.
+- `eric_verschluesselungs_parameter_t` has version 3 in ERiC 44; check
+  `eric_types.h` when switching releases.

@@ -22,7 +22,7 @@ import est_prefill
 FIELD_DB = os.environ.get("ERIC_FIELD_DB", os.path.expanduser("~/eric-win/ericfelder.db3"))
 ELSTER_NS = "http://www.elster.de/elsterxml/schema/v11"
 E10_NS = "http://finkonsens.de/elster/elstererklaerung/est/e10/v{year}"
-TEST_MERKER, TEST_HERSTELLER = "700000004", "74931"
+TEST_MERKER = "700000004"
 # form abbreviation -> ELSTER religion key (source: erica est_mapping.py, VZ 2021)
 RELIGION = {"VD": "11", "EV": "02", "RK": "03", "AK": "04", "ER": "05", "FR": "07"}
 
@@ -314,7 +314,7 @@ def generate(eric, year, validate=False):
     if rc != 0:
         raise RuntimeError(f"tax number: {stnr13}")
     body = datenteil(year, stnr13)
-    th_kw = {"datenart": "ESt", "testmerker": TEST_MERKER, "hersteller_id": TEST_HERSTELLER}
+    th_kw = {"datenart": "ESt", "testmerker": TEST_MERKER}
     if hasattr(eric, "batch"):
         res = eric.batch([["create_th", body, th_kw]])
         rc, full = res[0]
@@ -324,9 +324,12 @@ def generate(eric, year, validate=False):
         raise RuntimeError(f"EricCreateTH rc={rc}: {full[:500]}")
     result = None
     if validate:
-        # schema check only: plausibility checks (EricBearbeiteVorgang) need an own manufacturer id
         rc, out = eric.check_xml(full, f"ESt_{year}")
         result = {"ok": rc == 0, "rc": rc, "result": out}
+        # plausibility checks (EricBearbeiteVorgang) need an own manufacturer id
+        if rc == 0 and os.environ.get("ERIC_HERSTELLER_ID"):
+            rc, out, _ = eric.process(full, f"ESt_{year}")
+            result = {"ok": rc == 0, "rc": rc, "result": out, "plausi": True}
     return full, result
 
 

@@ -1,0 +1,17 @@
+# ERiC (ELSTER licence: no redistribution on its own) - never commit
+ERiC-*/
+*.jar
+*.so
+*.so.*
+*.dll
+*.dylib
+*.pfx
+plugins/
+include/
+erictoolkit/
+ericfelder.db3
+lizenz.pdf
+eric.log
+# tax data
+est*.json
+*_elster.xml

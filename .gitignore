@@ -78,3 +78,11 @@ erica/worker/instances/blueprint/cert.pfx
 /lib/pyeric/eric-lib/
 /lib/pyeric/lib/
 /source.env
+
+# ERiC download (ELSTER licence: no redistribution on its own)
+ERiC-*/
+ERiC-*.jar
+eric-linux/
+eric-win/
+ericfelder.db3
+*.pfx

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """ctypes binding for ELSTER ERiC (singlethread API), stdlib only.
 
-Works natively on Linux (libericapi.so) and on Windows / under Wine
-(ericapi.dll). For Linux without an own ERiC download, WineEric runs this
-file under a Windows Python in Wine as a bridge:
+Signatures follow the ERiC 44 headers (ericapi.h, eric_types.h). Works natively
+on Linux (ERiC-<ver>-Linux-x86_64.jar, unpacked: lib/libericapi.so with
+lib/plugins) and on Windows / under Wine (ericapi.dll). For Linux without an
+own ERiC download, WineEric runs this file under a Windows Python in Wine as a
+bridge:
 
   wine python.exe eric_lib.py <eric_dir> version
   wine python.exe eric_lib.py <eric_dir> validate <xml_file> <datenart>
@@ -23,10 +25,13 @@ ERIC_SENDE = 1 << 2
 ERIC_PRUEFE_HINWEISE = 1 << 7
 
 WINDOWS = os.name == "nt"
+# own manufacturer id from the ELSTER developer area; 74931 is the public test id
+# (blocked for plausibility checks since ERiC 43)
+HERSTELLER_ID = os.environ.get("ERIC_HERSTELLER_ID", "74931")
 
 
 class CryptParams(ctypes.Structure):
-    # eric_verschluesselungs_parameter_t; layout to be checked against ericdef.h
+    # eric_verschluesselungs_parameter_t (eric_types.h); version must be 3 in ERiC 44
     _fields_ = [("version", ctypes.c_uint32),
                 ("zertifikatHandle", ctypes.c_uint32),
                 ("pin", ctypes.c_char_p)]
@@ -35,7 +40,7 @@ class CryptParams(ctypes.Structure):
 def find_library(eric_dir):
     """Return (library file, plugin dir) for an ERiC directory.
 
-    Linux download: <dir>/lib/libericapi.so with lib/plugins2.
+    Linux download: <dir>/lib/libericapi.so with lib/plugins.
     Windows / WISO: <dir>/ericapi.dll with plugins next to it.
     """
     for libdir in (os.path.join(eric_dir, "lib"), eric_dir):
@@ -72,7 +77,7 @@ class Eric:
         lib.EricHoleFehlerText.argtypes = [i, vp]
         lib.EricVersion.argtypes = [vp]
         lib.EricBearbeiteVorgang.argtypes = [cp, cp, u32, vp,
-                                             ctypes.POINTER(CryptParams), vp, vp, vp]
+                                             ctypes.POINTER(CryptParams), vp, vp]
         lib.EricGetHandleToCertificate.argtypes = [ctypes.POINTER(u32),
                                                    ctypes.POINTER(u32), cp]
         lib.EricCloseHandleToCertificate.argtypes = [u32]
@@ -130,9 +135,10 @@ class Eric:
                 self._free(b)
 
     def create_th(self, xml, datenart="ESt", verfahren="ElsterErklaerung", vorgang="send-Auth",
-                  testmerker="700000004", hersteller_id="74931",
+                  testmerker="700000004", hersteller_id=None,
                   daten_lieferant="Softwaretester ERiC", version_client="1"):
         """Let ERiC wrap <DatenTeil> with a <TransferHeader> (returns the full XML)."""
+        hersteller_id = hersteller_id or HERSTELLER_ID
         enc = [v.encode() for v in (xml, verfahren, datenart, vorgang, testmerker,
                                     hersteller_id, daten_lieferant, version_client)]
         return self._call_buf(self.lib.EricCreateTH, *enc, None)
@@ -170,7 +176,7 @@ class Eric:
                                         handle.value, pin.encode())
                 rc = self.lib.EricBearbeiteVorgang(
                     xml.encode("utf-8"), datenart.encode(), flags, None,
-                    ctypes.byref(crypt) if crypt else None, None, ret, srv)
+                    ctypes.byref(crypt) if crypt else None, ret, srv)
                 out = self._text(ret)
                 if rc != ERIC_OK and not out:
                     out = self.error_text(rc)
