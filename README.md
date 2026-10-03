@@ -3,6 +3,10 @@
 > **Important**
 **This project has been discontinued**
 
+> **Offener Brief / open letter (2. Oktober 2026)**
+Darf ein freies Programm wie „erica“ seine Hersteller-ID und die nötigen ERiC-Laufzeitbibliotheken öffentlich mitliefern?
+Die Anfrage an das Bayerische Finanzministerium: [doc/open_letter](doc/open_letter/2026-10-02_hersteller_id_erica.md) — Antwort ausstehend.
+
 🇬🇧
 Erica is a service to send tax declarations to ELSTER. 
 It is a wrapper around the functionality of ERiC, ELSTER's own client to access their APIs.
