@@ -36,6 +36,9 @@ and never belongs in this repository.
   unzip it) with your own manufacturer id. ERiC binaries, headers, plugins,
   documentation, test certificates and `ericfelder.db3` are kept out of git
   (`.gitignore`). Bindings follow the ERiC 44.3 headers.
+  Whether a manufacturer id and the runtime libraries may ship with this open
+  source program is asked in an open letter:
+  [doc/open_letter](../doc/open_letter/2026-10-02_hersteller_id_erica.md).
 - The public test id 74931 is blocked since ERiC 43, so without an own id
   (`ERIC_HERSTELLER_ID`) only the schema check (`EricCheckXML`) works; with it,
   `est_xml.py --validate` also runs the plausibility check (`EricBearbeiteVorgang`).
